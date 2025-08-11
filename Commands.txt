@@ -1,0 +1,4 @@
+dotnet new console -n ConsoleProject
+dotnet new webapi -n ApiProject
+dotnet new mvc -n MvcProject
+dotnet new classlib -n LibraryProject
