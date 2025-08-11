@@ -2,3 +2,88 @@ dotnet new console -n ConsoleProject
 dotnet new webapi -n ApiProject
 dotnet new mvc -n MvcProject
 dotnet new classlib -n LibraryProject
+dotnet new worker -n ServiceProject
+
+
+Windows Service:
+
+using Microsoft.Extensions.Hosting;
+
+Host.CreateDefaultBuilder(args)
+    .UseWindowsService()  // Hiermee registreer je het als Windows Service
+    .ConfigureServices(services =>
+    {
+        services.AddHostedService<Worker>();
+    })
+    .Build()
+    .Run();
+
+Publish and Install as a Windows Service
+1. Publish your project
+First, you need to build and publish your project to a folder that will be used for installing the service.
+
+In Git Bash or Command Prompt, navigate to your project folder and run:
+
+bash
+Kopiëren
+Bewerken
+dotnet publish -c Release -o ./publish
+-c Release means you’re creating a Release build (optimized)
+
+-o ./publish specifies the output folder named publish inside your project folder
+
+After this, your compiled app and all necessary files will be inside the publish folder.
+
+2. Install the service using sc.exe
+Use the Windows utility sc.exe to create a new Windows Service that runs your published app.
+
+Open Command Prompt as Administrator (right-click Command Prompt > “Run as administrator”) and run:
+
+cmd
+Kopiëren
+Bewerken
+sc create MyService binPath= "C:\path\to\your\project\publish\MyWindowsService.exe"
+Notes:
+
+Replace C:\path\to\your\project\publish\MyWindowsService.exe with the full path to your published executable.
+
+There must be a space after binPath= (very important!)
+
+MyService is the name you choose for your Windows Service.
+
+3. Start the service
+Start your service with:
+
+cmd
+Kopiëren
+Bewerken
+sc start MyService
+4. Stop the service (optional)
+If you want to stop the service:
+
+c
+Kopiëren
+Bewerken
+sc stop MyService
+5. Delete the service (optional)
+To remove the service:
+
+cmd
+Kopiëren
+Bewerken
+sc delete MyService
+Alternative: Installing with PowerShell
+You can also create and start the service using PowerShell:
+
+powershell
+Kopiëren
+Bewerken
+New-Service -Name "MyService" -BinaryPathName "C:\path\to\your\project\publish\MyWindowsService.exe"
+Start-Service -Name "MyService"
+Summary
+dotnet publish to build your app and prepare all files
+
+sc create to create a new Windows Service pointing to your app
+
+sc start to start the service
+
